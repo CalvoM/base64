@@ -61,6 +61,31 @@ def encoder(text):
     return word
 
 
+def decoder(data):
+    """Decodes the base64 encoding
+
+    Args:
+        data (string): The base encoded string
+
+    Returns:
+        string: Decoded string
+    """
+    mapped_data=[]
+    for d in data:
+        if d!='=':
+            bin_c = bin(base64_chars.index(d)).replace('0b','')
+            bin_c = '0'*(6-len(bin_c))+bin_c
+            mapped_data.append(bin_c)
+    
+    str_data = ''.join(mapped_data)
+    byt = wrap(str_data,8)
+    word = ''.join([chr(int(x,2)) for x in byt])
+    word = word.rstrip('\x00')
+    return word
+
 if __name__ == "__main__":
+    encoded_str=''
     with open(sys.argv[1],'rb') as f:
-        print(encoder(f.read()))
+        encoded_str = encoder(f.read())
+    with open(sys.argv[2],'w') as f:
+        f.write((decoder(encoded_str)),"utf-8")
